@@ -151,8 +151,8 @@ divclust <- function (data, K = NULL)
   X_centre <- cbind(X_quanti, X_quali) 
   maxdim <- min(n,ncol(X)-nb_quali)
   dec <- gsvd(X_centre, c(rep(1, nb_quanti), 1./mu_quali), rep(1./n, n))
-  Z <- dec$u[,1:maxdim] %*% diag(dec$d[1:maxdim])
-  w <- rep(1. / n, n) 
+  Z <- dec$u[,1:maxdim] %*% diag(dec$d)[1:maxdim, 1:maxdim, drop=FALSE]
+  w <- rep(1. / n, n)
   D <- rep(1, ncol(Z))
   
   # tree construction
