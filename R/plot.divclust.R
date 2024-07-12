@@ -9,6 +9,8 @@
 #' only of the top levels of the dendrogram. The default value is 3.
 #' @param label If TRUE, the labels of the observations are drawn.
 #' @param ... further arguments passed from other methods
+#' @importFrom stats sd
+#' @importFrom graphics par plot.new segments text
 #' @export
 #' @seealso  \link{divclust}
 #' @examples
