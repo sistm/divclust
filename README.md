@@ -1,4 +1,8 @@
-# divclust
+# `divclust`
+
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/Alar0g/divclust/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Alar0g/divclust/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
 
 ## Description
 This R package provides monothetic divisive hierarchical clustering. Variables can be quantitative, qualitative or a mixture of both.
@@ -8,7 +12,7 @@ This R package provides monothetic divisive hierarchical clustering. Variables c
 To install the current development version from github, use :
 
 ```{r eval=FALSE}
-devtools::install_github("chavent/divclust")
+remotes::install_github("Alar0g/divclust")
 # This needs the devtools package to be installed :
-# install.packages("devtools")
+# install.packages("remotes")
 ```
