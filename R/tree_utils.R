@@ -288,7 +288,7 @@ between_cluster_inert <- function (Z, indices, indices_c, w = rep(1. / nrow(Z), 
   if (is.null(indices) | is.null(indices_c)) stop('between_cluster_inert : one of the two cluster is empty!')
   if (length(indices) > 1) {
     mu <- sum(w[indices])
-    g <- colSums(w[indices] * Z[indices, ]) / mu
+    g <- colSums(w[indices] * Z[indices, , drop=FALSE]) / mu
   }
   else {
     mu <-  w[indices]
@@ -296,7 +296,7 @@ between_cluster_inert <- function (Z, indices, indices_c, w = rep(1. / nrow(Z), 
   }
   if (length(indices_c) > 1) {
     mu_c <- sum(w[indices_c])
-    g_c <- colSums(w[indices_c] * Z[indices_c, ]) / mu_c
+    g_c <- colSums(w[indices_c] * Z[indices_c, , drop=FALSE]) / mu_c
   }
   else {
     mu_c <-  w[indices_c]
