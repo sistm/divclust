@@ -1,11 +1,5 @@
-
-#' @importFrom Rcpp evalCpp
-#' @useDynLib divclust
+#' Monothetic divisive hierarchical clustering
 #'
-#' @import intervals
-
-#' @title Monothetic divisive hierarchical clustering
-#' @description
 #' DIVCLUS-T is a divisive hierarchical clustering algorithm based on a monothetic bipartitional
 #' approach allowing the dendrogram of the hierarchy to be read as a decision tree.
 #' It is designed for numerical, categorical (ordered or not) or mixed data. Like the Ward agglomerative hierarchical
@@ -44,7 +38,12 @@
 #' hierarchical clustering. This can be used, to help in the choice of the number of clusters
 #' as for Ward hierarchical clustering. For ordered qualitative variables (class factor with argument ordered
 #' =TRUE), this order on the categories is used to reduce the number of possible binary questions.
-
+#'
+#' @importFrom Rcpp evalCpp
+#' @import RcppEigen
+#' @importFrom intervals Intervals interval_intersection
+#' @useDynLib divclust, .registration = TRUE
+#'
 #' @seealso  \link{plot.divclust} \link{cutreediv}
 #' @export
 #' @examples

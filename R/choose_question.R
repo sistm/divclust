@@ -32,7 +32,7 @@
 
 choose_question <- function (X, Z, indices, vec_quali = c(), w = rep(1. / nrow(Z), nrow(Z)),
                              D = rep(1, ncol(Z)),vec_order) {
-  l = length(indices)
+  l <- length(indices)
   #if (l <= 1)
   #   stop(' choose_question : cannot divide singleton or empty sets')
   p <- dim(X)[2]
@@ -47,12 +47,13 @@ choose_question <- function (X, Z, indices, vec_quali = c(), w = rep(1. / nrow(Z
   if (l > 1) {
     # first we list all the quantitative variables
     for (j in seq_len(nb_quanti)) {
-      cut_vals <- compute_cut_values(X[indices, j])
-      inerts <- sapply(cut_vals, function(l) { between_cluster_inert(Z, indices[X[indices, j] <= l], indices[X[indices, j] > l], w, D) })
+      Xj <- X[, j]
+      cut_vals <- fast_compute_cut_values(Xj[indices])
+      inerts <- fast_between_cluster_inert_eigen(Z, cut_vals, indices, Xj, w, D)
       l_max <- which.max(inerts)
       if ( length(l_max)== 1 && inerts[l_max] >=inert_max) { # beware, think to add a empty test
         denom <- inert_1D(X, j, indices, w)
-        nume <- between_cluster_inert_1D(X, j , indices[X[indices, j] <= cut_vals[l_max]], indices[X[indices, j] > cut_vals[l_max]], w)
+        nume <- between_cluster_inert_1D(X, j , indices[Xj[indices] <= cut_vals[l_max]], indices[Xj[indices] > cut_vals[l_max]], w)
         second_inert_candidat <- nume / denom
         if (inerts[l_max] == inert_max) { # beware, may be a tolerance test would be better
           if (second_inert_candidat >second_inert ) {
@@ -80,7 +81,7 @@ choose_question <- function (X, Z, indices, vec_quali = c(), w = rep(1. / nrow(Z
 
     for(j in seq_len(nb_quali)) {
       nb_mod = vec_quali[[j]]
-      to_keep = seq_len(nb_mod)[apply(X[indices, start_offsets[[j]] + seq_len(nb_mod)],2,sum) != 0]
+      to_keep = seq_len(nb_mod)[apply(X[indices, start_offsets[[j]] + seq_len(nb_mod)],2,sum) != 0] #use colsums instead but watchout for automatic transpose
       if (vec_order[j]==TRUE)
       {
         biparts <- list()

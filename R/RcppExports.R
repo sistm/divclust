@@ -2,6 +2,22 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 bipart <- function(n) {
-    .Call('_divclust_bipart', PACKAGE = 'divclust', n)
+    .Call(`_divclust_bipart`, n)
+}
+
+fastSubstring_cut1 <- function(s) {
+    .Call(`_divclust_fastSubstring_cut1`, s)
+}
+
+fast_between_cluster_inert <- function(Z, cut_vals, indices, X_col, w, D) {
+    .Call(`_divclust_fast_between_cluster_inert`, Z, cut_vals, indices, X_col, w, D)
+}
+
+fast_between_cluster_inert_eigen <- function(Z, cut_vals, indices, X_col, w, D) {
+    .Call(`_divclust_fast_between_cluster_inert_eigen`, Z, cut_vals, indices, X_col, w, D)
+}
+
+fast_compute_cut_values <- function(col) {
+    .Call(`_divclust_fast_compute_cut_values`, col)
 }
 

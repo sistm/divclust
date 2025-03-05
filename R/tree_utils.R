@@ -53,11 +53,11 @@ list_leaves <- function(cluster) {
 #' @keywords internal
 #' @export
 
-make_path <- function(node,path)
-{
+make_path <- function(node,path){
+
   if (node$v$cut_val$type=="quanti") {
-    z <- Intervals(c(-Inf,node$v$cut_val$value))
-    z_comp <- Intervals(c(node$v$cut_val$value,Inf))
+    z <- c(-Inf,node$v$cut_val$value)
+    z_comp <- c(node$v$cut_val$value,Inf)
   }
   if (node$v$cut_val$type=="quali") {
     z <- node$v$cut_val$value$bipart
@@ -68,8 +68,7 @@ make_path <- function(node,path)
     j <- 1
     path_l <- list()
     path_r <- list()
-  }
-  else {
+  }else {
     path_l <- path
     path_r <- path
     vec_type <- unlist(lapply(path,function(x){node$v$cut_val$type==x$type}))
@@ -77,8 +76,8 @@ make_path <- function(node,path)
     if (2 %in% (vec_type+vec_cut_ind))  {
       j <- which(vec_type+vec_cut_ind==2)
       if (node$v$cut_val$type=="quanti") {
-        z <- interval_intersection(z,path[[j]]$val)
-        z_comp <- interval_intersection(z_comp,path[[j]]$val)
+        z <- c(path[[j]]$val[1], min(node$v$cut_val$value, path[[j]]$val[2]))
+        z_comp <- c(max(node$v$cut_val$value, path[[j]]$val[1]), path[[j]]$val[2])
       }
       if (node$v$cut_val$type=="quali") {
         z <- intersect(z,path[[j]]$val)
@@ -92,6 +91,8 @@ make_path <- function(node,path)
   path_r[[j]] <- list(type=node$v$cut_val$type,cut_ind=node$v$cut_ind,val = z_comp)
   return(list(left = path_l, right = path_r))
 }
+
+
 
 #' @title Description of the leaves
 #' @description Builds the monothetic description of the leaves
@@ -109,7 +110,8 @@ make_description <- function(leaves,cluster)
   cnames_quali <- cluster$cnames_quali
   description <- list()
   # suppress the two first character of a string
-  cut_1 <- function(s) { Reduce(paste0,sapply(strsplit(s,""), identity)[-c(1,2)])}
+
+  #cut_1 <- function(s) { Reduce(paste0,sapply(strsplit(s,""), identity)[-c(1,2)])}
 
   for (j in 1:length(leaves))
   {
@@ -129,7 +131,7 @@ make_description <- function(leaves,cluster)
       }
       description[j] <- paste(description[[j]], sentence, sep=' , ')
     }
-    description[j] <- cut_1(description[[j]])
+    description[j] <- fastSubstring_cut1(description[[j]])
   }
   return(description)
 }
@@ -317,9 +319,9 @@ between_cluster_inert <- function (Z, indices, indices_c, w = rep(1. / nrow(Z), 
 #' @seealso \link{choose_question}
 #' @export
 compute_cut_values <- function(col) {
-  cuts <- unique(sort(col))
+  cuts <- sort(unique(col))
   if (length(cuts) >= 2) {
-    cuts <- 0.5*(cuts[-1]+cuts[1:(length(cuts)-1)])
+    cuts <- 0.5*(cuts[-1]+cuts[-length(cuts)])
   }
   return (cuts)
 }
