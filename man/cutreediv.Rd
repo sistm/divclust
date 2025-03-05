@@ -2,7 +2,7 @@
 % Please edit documentation in R/cutreediv.R
 \name{cutreediv}
 \alias{cutreediv}
-\title{Cut the tree}
+\title{Cut a divisive tree}
 \usage{
 cutreediv(tree, K)
 }
@@ -34,9 +34,9 @@ p_5
 data(dogs) # pure qualitative data
 tree <- divclust(dogs) # full clustering
 p_4 <- cutreediv(tree,K=4) # partition in 4 clusters
-data(wine) # mixed data 
+data(wine) # mixed data
 data <- wine[,1:29]
 tree <- divclust(data) # full clustering
-p_4 <- cutreediv(tree, 4) # 
+p_4 <- cutreediv(tree, 4) #
 
 }
