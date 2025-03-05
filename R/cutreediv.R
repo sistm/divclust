@@ -26,37 +26,39 @@
 #' 
 
 cutreediv <- function(tree,K) { 
-  cl <- match.call()
   cluster <- tree
   if (!inherits(cluster, "divclust")) 
     stop("use only with \"divclust\" objects")
   if (!(K %in% 1:(length(cluster$clusters)-1))) stop(paste("K must be an integer between 0 and",length(cluster$clusters)-1))
   l <- list()
   f <- fifo_create()
-  #fifo_add(f, list(node = cluster$tree, path = ""))
-  fifo_add(f, list(node = cluster$tree, path = NULL))
+  node_init <- cluster$tree
+  inert_init <- node_init$v$inert
+  fifo_add(f, list(node = node_init, path = NULL, inert = inert_init, stage = 1))
   
   while ( !fifo_is_empty(f)) {
     z <- fifo_remove(f)
     node <- z$node
     path <- z$path
+    inertie <- z$inert
+    stages <- z$stage
     
     sentence <- make_path(node, path)
     path_l <- sentence$l
     path_r <- sentence$r
-    #sentence <- make_sentences(cluster, node)
-    #path_l <- paste(path, sentence$l, sep=', ')
-    #path_r <- paste(path, sentence$r, sep=', ')
-    #if (is.null(node$l$l)) {
+    
+    inert_l <- node$l$v$inert
+    inert_r <- node$r$v$inert
+    
     if (node$l$v$inert <= cluster$height[K]) {   
-      l[[length(l) + 1]] <-  list(class = node$v$A_l, path = path_l) 
+      l[[length(l) + 1]] <-  list(class = node$v$A_l, path = path_l, inert = inertie, stage = stages) 
     } else {
-      fifo_add(f, list(node = node$l, path = path_l))
+      fifo_add(f, list(node = node$l, path = path_l, inert = append(inertie, inert_l), stage = stages + 1))
     }
     if (node$r$v$inert <= cluster$height[K]) {
-      l[[length(l) + 1]]  <- list(class = node$v$A_l_c, path = path_r)
+      l[[length(l) + 1]]  <- list(class = node$v$A_l_c, path = path_r, inert = inertie, stage = stages)
     } else {
-      fifo_add(f, list(node = node$r, path = path_r))
+      fifo_add(f, list(node = node$r, path = path_r, inert = append(inertie, inert_r), stage = stages + 1))
     }  
   }
   c <- rep(0, length(l)) 
@@ -67,15 +69,20 @@ cutreediv <- function(tree,K) {
     } 
     k <- k + 1 
   }
+  
   part <- list()
   part$description <- make_description(l,cluster)
-  names(part$description) <- paste("C", 1:K, sep = "")
+  names(part$description) <- paste("C", 1:length(l), sep = "")
   part$clusters <- lapply(l, function(x) {cluster$rnames[x$class]})
-  names(part$clusters) <- paste("C", 1:K, sep = "")
+  names(part$clusters) <- paste("C", 1:length(l), sep = "")
+  part$height <- lapply(l, function(x) {x$inert})
+  names(part$height) <- paste("C", 1:length(l), sep = "")
+  part$stages <- lapply(l, function(x) {x$stage})
+  names(part$stages) <- paste("C", 1:length(l), sep = "")
+  #names(part$height) <- lapply(l, function(x) {cluster$rnames[x$class]})
+  part$T <- cluster$T
   part$which_cluster <- c
-  part$B <- sum(cluster$height[1:(K-1)])/cluster$T
   part$leaves <- l
-  part$call <- cl
   class(part) <- "cutreediv"
   return(part)
 }
