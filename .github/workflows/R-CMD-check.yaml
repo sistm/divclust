@@ -43,10 +43,29 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck
+          extra-packages: any::rcmdcheck any::devtools
           needs: check
 
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
           build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
+
+
+      - name: Build windows binaries
+        if: runner.os == 'Windows'
+        run: devtools::build(binary = TRUE, path = "dist")
+
+      - name: Get package version
+        if: runner.os == 'Windows'
+        shell: Rscript {0}
+        run: |
+          echo "PACKAGE_VERSION=$(Rscript -e 'cat(as.character(desc::desc_get_version()))')" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Upload artifacts
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: divclust_${{ env.PACKAGE_VERSION }}_${{ runner.os }}-r${{ matrix.config.r-version }}
+          path: dist/**
