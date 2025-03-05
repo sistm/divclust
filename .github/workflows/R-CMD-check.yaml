@@ -67,5 +67,5 @@ jobs:
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@v4
         with:
-          name: divclust_${{ env.PACKAGE_VERSION }}_${{ runner.os }}-r${{ matrix.config.r-version }}
+          name: divclust_${{ env.PACKAGE_VERSION }}
           path: dist/**
