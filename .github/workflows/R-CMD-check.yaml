@@ -55,10 +55,10 @@ jobs:
       - name: Build windows binaries
         if: runner.os == 'Windows'
         run: devtools::build(binary = TRUE, path = "dist")
+        shell: Rscript {0}
 
       - name: Get package version
         if: runner.os == 'Windows'
-        shell: Rscript {0}
         run: |
           echo "PACKAGE_VERSION=$(Rscript -e 'cat(as.character(desc::desc_get_version()))')" >> $GITHUB_ENV
         shell: bash
