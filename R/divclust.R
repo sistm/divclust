@@ -89,7 +89,7 @@
 #' c_tot$tree$v #internal contain of the root node
 #' c_tot$tree$r$v #internal contain of the right node of the root node
 
-divclust <- function (data, K = NULL)
+divclust <- function (data, K = NULL, mtry = ncol(data))
 {
   cl <- match.call()
   if (is.null(data)) {
@@ -164,9 +164,32 @@ divclust <- function (data, K = NULL)
   # leaves <- {Tree(choose_qestion(Z, all_indices))}
   # each iteration, compute "locally maximal partition"
   # leaves <- (leaves\\{Fmax}) U {Tree(A_l(F_max), Tree(Al_c(F_max))}
+  
+  #mtry à chaque noeud de l'arbre
+  cut_var <- sample(1:ncol(data), size = mtry)
+  #variable sample
+  data_mtry <- data[, cut_var, drop=FALSE]
+  obj_mtry <- split_mix(data_mtry)
+  
+  data_quanti_mtry <- obj_mtry$data_quanti
+  X_quanti_mtry <- as.matrix(data_quanti_mtry)
+  
+  data_quali_mtry <- obj_mtry$data_quali
+  if (!is.null(data_quali_mtry)) {
+    res_mtry <- format_cat_data(data_quali_mtry)
+    X_quali_mtry <- as.matrix(res_mtry$Y)
+    vec_quali_mtry <- res_mtry$vec_quali
+    vec_order_mtry <- unlist(lapply(data_quali_mtry,function(x){class(x)[1]=="ordered"}))
+  } else {
+    X_quali_mtry <-matrix(0,n,0)
+    vec_quali_mtry <- c()
+    vec_order_mtry <- c()
+  }
+  
+  X_mtry <- cbind(X_quanti_mtry, X_quali_mtry)
 
   dendro <-new.env()
-  dendro$v <- choose_question(X, Z, c(1:n), vec_quali, w, D,vec_order)
+  dendro$v <- choose_question(X_mtry, Z, c(1:n), vec_quali_mtry, w, D,vec_order_mtry)
   leaves <- list(dendro)
   k <- 1
   kmax <- nrow(unique(X))
@@ -179,13 +202,57 @@ divclust <- function (data, K = NULL)
     height[k] <- leaves[[ind_max]]$v$inert
     Fmin <- leaves[[ind_max]]
     leaves[[ind_max]] <- NULL
+    
+    cut_var_l <- sample(1:ncol(data), size = mtry)
+    #variable sample
+    data_mtry_l <- data[, cut_var_l, drop=FALSE]
+    obj_mtry_l <- split_mix(data_mtry_l)
+    
+    data_quanti_mtry_l <- obj_mtry_l$data_quanti
+    X_quanti_mtry_l <- as.matrix(data_quanti_mtry_l)
+    
+    data_quali_mtry_l <- obj_mtry_l$data_quali
+    if (!is.null(data_quali_mtry_l)) {
+      res_mtry_l <- format_cat_data(data_quali_mtry_l)
+      X_quali_mtry_l <- as.matrix(res_mtry_l$Y)
+      vec_quali_mtry_l <- res_mtry_l$vec_quali
+      vec_order_mtry_l <- unlist(lapply(data_quali_mtry_l,function(x){class(x)[1]=="ordered"}))
+    } else {
+      X_quali_mtry_l <-matrix(0,n,0)
+      vec_quali_mtry_l <- c()
+      vec_order_mtry_l <- c()
+    }
+    
+    X_mtry_l <- cbind(X_quanti_mtry_l, X_quali_mtry_l)
 
-    cqg <- choose_question(X, Z, Fmin$v$A_l, vec_quali, w, D,vec_order)
+    cqg <- choose_question(X_mtry_l, Z, Fmin$v$A_l, vec_quali_mtry_l, w, D,vec_order_mtry_l)
     Fmin$l <- new.env()
     Fmin$l$v <- cqg
     leaves <- append(leaves, Fmin$l)
+    
+    cut_var_r <- sample(1:ncol(data), size = mtry)
+    #variable sample
+    data_mtry_r <- data[, cut_var_r, drop=FALSE]
+    obj_mtry_r <- split_mix(data_mtry_r)
+    
+    data_quanti_mtry_r <- obj_mtry_r$data_quanti
+    X_quanti_mtry_r <- as.matrix(data_quanti_mtry_r)
+    
+    data_quali_mtry_r <- obj_mtry_r$data_quali
+    if (!is.null(data_quali_mtry_r)) {
+      res_mtry_r <- format_cat_data(data_quali_mtry_r)
+      X_quali_mtry_r <- as.matrix(res_mtry_r$Y)
+      vec_quali_mtry_r <- res_mtry_r$vec_quali
+      vec_order_mtry_r <- unlist(lapply(data_quali_mtry_r,function(x){class(x)[1]=="ordered"}))
+    } else {
+      X_quali_mtry_r <-matrix(0,n,0)
+      vec_quali_mtry_r <- c()
+      vec_order_mtry_r <- c()
+    }
+    
+    X_mtry_r <- cbind(X_quanti_mtry_r, X_quali_mtry_r)
 
-    cqd <- choose_question(X, Z, Fmin$v$A_l_c, vec_quali, w, D,vec_order)
+    cqd <- choose_question(X_mtry_r, Z, Fmin$v$A_l_c, vec_quali_mtry_r, w, D,vec_order_mtry_r)
     Fmin$r <- new.env()
     Fmin$r$v<- cqd
     leaves <- append(leaves, Fmin$r)
@@ -215,6 +282,7 @@ divclust <- function (data, K = NULL)
   #cluster$description <- lapply(cluster$description, cut_1)
   #cluster$description <- lapply(cluster$description, cut_1) # Yes we apply two times!
 
+  cluster$mtry <- mtry
   cluster$description <- make_description(ret_leaves$leaves,cluster)
   names(cluster$description) <- paste("C", 1:K, sep = "")
   cluster$clusters <- lapply(ret_leaves$leaves, function(x) {rnames[x$class]})
