@@ -4,7 +4,7 @@
 \alias{divclust}
 \title{Monothetic divisive hierarchical clustering}
 \usage{
-divclust(data, K = NULL)
+divclust(data, K = NULL, mtry = ncol(data))
 }
 \arguments{
 \item{data}{a data frame with numerical and/or categorical variables.

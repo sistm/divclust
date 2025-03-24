@@ -12,6 +12,7 @@
 #' If the variable is ordinal, the column must be of class factor with the argument ordered=TRUE.
 #' @param K the number of final clusters (leaves of the tree). By default, the complete dendrogram
 #' is performed.
+#' @param mtry the number of variables sampled at each tree node. By default, all the variables are selected.
 
 #' @return \item{tree}{an internal \strong{tree}}
 #' @return \item{clusters}{the list of observations in each final cluster (the leaves of the tree)}
@@ -25,6 +26,7 @@
 #' @return \item{vec_quali}{number of categories of each qualitative variable}
 #' @return \item{kmax}{the number of different observations i.e. the maximal number of leaves}
 #' @return \item{T}{The total inertia}
+#' @return \item{mtry}{the number of variables sampled at each tree node}
 #' @details The tree has K leaves corresponding to a partition in K clusters if K is specified
 #' in input. Otherwise, each final cluster contains one observation and the tree is the
 #' complete dendrogram. The between-cluster inertia of the final partition of the leaves is the sum of
@@ -172,7 +174,11 @@ divclust <- function (data, K = NULL, mtry = ncol(data))
   obj_mtry <- split_mix(data_mtry)
   
   data_quanti_mtry <- obj_mtry$data_quanti
-  X_quanti_mtry <- as.matrix(data_quanti_mtry)
+  if (!is.null(data_quanti_mtry)) {
+    X_quanti_mtry <- as.matrix(data_quanti_mtry)
+  } else {
+    X_quanti_mtry <- matrix(0,n,0)
+  }
   
   data_quali_mtry <- obj_mtry$data_quali
   if (!is.null(data_quali_mtry)) {
@@ -209,7 +215,11 @@ divclust <- function (data, K = NULL, mtry = ncol(data))
     obj_mtry_l <- split_mix(data_mtry_l)
     
     data_quanti_mtry_l <- obj_mtry_l$data_quanti
-    X_quanti_mtry_l <- as.matrix(data_quanti_mtry_l)
+    if (!is.null(data_quanti_mtry_l)) {
+      X_quanti_mtry_l <- as.matrix(data_quanti_mtry_l)
+    } else {
+      X_quanti_mtry_l <- matrix(0,n,0)
+    }
     
     data_quali_mtry_l <- obj_mtry_l$data_quali
     if (!is.null(data_quali_mtry_l)) {
@@ -236,7 +246,11 @@ divclust <- function (data, K = NULL, mtry = ncol(data))
     obj_mtry_r <- split_mix(data_mtry_r)
     
     data_quanti_mtry_r <- obj_mtry_r$data_quanti
-    X_quanti_mtry_r <- as.matrix(data_quanti_mtry_r)
+    if (!is.null(data_quanti_mtry_r)) {
+      X_quanti_mtry_r <- as.matrix(data_quanti_mtry_r)
+    } else {
+      X_quanti_mtry_r <- matrix(0,n,0)
+    }
     
     data_quali_mtry_r <- obj_mtry_r$data_quali
     if (!is.null(data_quali_mtry_r)) {
