@@ -219,6 +219,8 @@ divclust <- function (data, K = NULL)
   names(cluster$description) <- paste("C", 1:K, sep = "")
   cluster$clusters <- lapply(ret_leaves$leaves, function(x) {rnames[x$class]})
   names(cluster$clusters) <- paste("C", 1:K, sep = "")
+  cluster$inertia <- lapply(ret_leaves$leaves, function(x) {x$inert})
+  names(cluster$inertia) <- paste("C", 1:K, sep = "")
   cluster$which_cluster <- ret_leaves$classes
   cluster$data_quanti <- data_quanti
   cluster$data_quali <- data_quali

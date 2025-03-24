@@ -10,28 +10,35 @@
 list_leaves <- function(cluster) {
   l <- list()
   f <- fifo_create()
+  node_init <- cluster$tree
+  inert_init <- node_init$v$inert
   #fifo_add(f, list(node = cluster$tree, path = ""))
-  fifo_add(f, list(node = cluster$tree, path = NULL))
+  fifo_add(f, list(node = node_init, path = NULL, inert = inert_init, stage = 1))
   while ( !fifo_is_empty(f)) {
     z <- fifo_remove(f)
     node <- z$node
     path <- z$path
+    inertie <- z$inert
+    stages <- z$stage
 
     sentence <- make_path(node, path)
     path_l <- sentence$l
     path_r <- sentence$r
+    
+    inert_l <- node$l$v$inert
+    inert_r <- node$r$v$inert
     #sentence <- make_sentences(cluster, node)
     #path_l <- paste(path, sentence$l, sep=', ')
     #path_r <- paste(path, sentence$r, sep=', ')
     if (is.null(node$l$l)) {
-      l[[length(l) + 1]] <-  list(class = node$v$A_l, path = path_l)
+      l[[length(l) + 1]] <-  list(class = node$v$A_l, path = path_l, inert = inertie, stage = stages)
     } else {
-      fifo_add(f, list(node = node$l, path = path_l))
+      fifo_add(f, list(node = node$l, path = path_l, inert = append(inertie, inert_l), stage = stages + 1))
     }
     if (is.null(node$r$l)) {
-      l[[length(l) + 1]]  <- list(class = node$v$A_l_c, path = path_r)
+      l[[length(l) + 1]]  <- list(class = node$v$A_l_c, path = path_r, inert = inertie, stage = stages)
     } else {
-      fifo_add(f, list(node = node$r, path = path_r))
+      fifo_add(f, list(node = node$r, path = path_r, inert = append(inertie, inert_r), stage = stages + 1))
     }
   }
   c <- rep(0, length(l))
