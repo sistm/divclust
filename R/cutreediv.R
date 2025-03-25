@@ -5,7 +5,8 @@
 #' @param K an integer with the desired number of clusters.
 #' @return \item{clusters}{the list of observations in each  cluster}
 #' @return \item{description}{the monothetic description of each cluster}
-#' @return \item{which_cluster}{a vector of integers indicating the cluster of each observation} 
+#' @return \item{which_cluster}{a vector of integers indicating the cluster of each observation}
+#' @return \item{inertia}{the list of inertia nodes extracted from the dendrogram's height values, for each cluster} 
 #' @return \item{B}{the proportion of inertia explained by the partition (between-cluster inertia/total inertia)}
 #' @return \item{leaves}{an internal list of \strong{leaves}}
 #' @export

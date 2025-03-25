@@ -18,6 +18,8 @@ cutreediv(tree, K)
 
 \item{which_cluster}{a vector of integers indicating the cluster of each observation}
 
+\item{inertia}{the list of inertia nodes extracted from the dendrogram's height values, for each cluster}
+
 \item{B}{the proportion of inertia explained by the partition (between-cluster inertia/total inertia)}
 
 \item{leaves}{an internal list of \strong{leaves}}
