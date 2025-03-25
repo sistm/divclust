@@ -26,6 +26,8 @@ is performed.}
 
 \item{height}{the height of the clusters in the dendrogram of the tree}
 
+\item{inertia}{the list of inertia nodes extracted from the dendrogram's height values, for each cluster}
+
 \item{B}{the proportion of inertia explained by the final partition (between-cluster inertia/total inertia)}
 
 \item{data_quanti}{the quantitative data set}
@@ -64,7 +66,12 @@ p1+m-p2. The quality of a partition is the proportion of inertia explained by th
 which is the between-cluster inertia divided by the total inertia. The height of a cluster in the dendrogram  of divclust
 is the inertia variation which is also the aggregation criterion of Ward used in ascendant
 hierarchical clustering. This can be used, to help in the choice of the number of clusters
-as for Ward hierarchical clustering. For ordered qualitative variables (class factor with argument ordered
+as for Ward hierarchical clustering.The inertia parameter provides, for each cluster, 
+a list of inertia nodes extracted from the 'height' values of the dendrogram. 
+This list captures the tree’s topology by marking the nodes that contribute to the cluster’s structure. 
+To compute the distance between two clusters, you can sum the 'height' values from their last shared inertia 
+node to the final node in the 'height' list, and then normalize this sum by dividing it by the total sum of all height values 
+(representing the maximum inertia). For ordered qualitative variables (class factor with argument ordered
 =TRUE), this order on the categories is used to reduce the number of possible binary questions.
 }
 \examples{
