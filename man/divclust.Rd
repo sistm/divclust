@@ -12,6 +12,8 @@ If the variable is ordinal, the column must be of class factor with the argument
 
 \item{K}{the number of final clusters (leaves of the tree). By default, the complete dendrogram
 is performed.}
+
+\item{mtry}{the number of variables sampled at each tree node. By default, all the variables are selected.}
 }
 \value{
 \item{tree}{an internal \strong{tree}}
@@ -37,6 +39,8 @@ is performed.}
 \item{kmax}{the number of different observations i.e. the maximal number of leaves}
 
 \item{T}{The total inertia}
+
+\item{mtry}{the number of variables sampled at each tree node}
 }
 \description{
 DIVCLUS-T is a divisive hierarchical clustering algorithm based on a monothetic bipartitional
