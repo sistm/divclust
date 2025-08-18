@@ -38,8 +38,10 @@ choose_question <- function (X, Z, indices, vec_quali = c(), w = rep(1. / nrow(Z
   p <- dim(X)[2]
   inert_max <- 0
   second_inert <- 0
-  c_max <- 0
-  j_max <- -1
+  #c_max <- 0
+  c_max <- list(type = NA_character_, value = NULL)
+  #j_max <- -1
+  j_max <- NA_character_
   A_l_max <- c()
   A_l_c_max <- c()
   nb_quanti <- p - sum(vec_quali)
