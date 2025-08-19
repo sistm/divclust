@@ -39,7 +39,7 @@ choose_question <- function (X, Z, indices, vec_quali = c(), w = rep(1. / nrow(Z
   inert_max <- 0
   second_inert <- 0
   #c_max <- 0
-  c_max <- list(type = NA_character_, value = NULL)
+  c_max <- list(type = "none", value = NULL)
   #j_max <- -1
   j_max <- NA_character_
   A_l_max <- c()
