@@ -242,13 +242,9 @@ divclust <- function (data, K = NULL, mtry = ncol(data))
     X_mtry_l <- cbind(X_quanti_mtry_l, X_quali_mtry_l)
 
     cqg <- choose_question(X_mtry_l, Z, Fmin$v$A_l, vec_quali_mtry_l, w, D,vec_order_mtry_l)
-    if(is.null(cqg)){
-      Fmin$l <- NULL
-    } else{
-      Fmin$l <- new.env()
-      Fmin$l$v <- cqg
-      leaves <- append(leaves, Fmin$l)
-    }
+    Fmin$l <- new.env()
+    Fmin$l$v <- cqg
+    leaves <- append(leaves, Fmin$l)
     
     cut_var_r <- sample(1:ncol(data), size = mtry)
     #variable sample
@@ -277,13 +273,10 @@ divclust <- function (data, K = NULL, mtry = ncol(data))
     X_mtry_r <- cbind(X_quanti_mtry_r, X_quali_mtry_r)
 
     cqd <- choose_question(X_mtry_r, Z, Fmin$v$A_l_c, vec_quali_mtry_r, w, D,vec_order_mtry_r)
-    if(is.null(cqd)){
-      Fmin$r <- NULL
-    } else {
-      Fmin$r <- new.env()
-      Fmin$r$v<- cqd
-      leaves <- append(leaves, Fmin$r)
-    }
+    Fmin$r <- new.env()
+    Fmin$r$v<- cqd
+    leaves <- append(leaves, Fmin$r)
+    
 
     k <- k+1
   }
@@ -364,4 +357,5 @@ NULL
 #' tree <- divclust(equality_case,K=3)
 #' plot(tree,nqbin=1) # the binary question with X1 is chosen
 NULL
+
 
