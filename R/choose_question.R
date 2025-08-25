@@ -113,10 +113,7 @@ choose_question <- function (X, Z, indices, vec_quali = c(), w = rep(1. / nrow(Z
     }
   }
 
-  if(inert_max==0 || length(A_l_max) == 0 || length(A_l_c_max) == 0){
-    return(NULL)
-    }else{
-    return (list(inert = inert_max, A_l = A_l_max, A_l_c = A_l_c_max, cut_ind = j_max, cut_val = c_max))
-    }
+  
+  return (list(inert = inert_max, A_l = A_l_max, A_l_c = A_l_c_max, cut_ind = j_max, cut_val = c_max))
 }
 
