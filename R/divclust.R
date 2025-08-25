@@ -276,7 +276,6 @@ divclust <- function (data, K = NULL, mtry = ncol(data))
     Fmin$r <- new.env()
     Fmin$r$v<- cqd
     leaves <- append(leaves, Fmin$r)
-    
 
     k <- k+1
   }
@@ -357,5 +356,3 @@ NULL
 #' tree <- divclust(equality_case,K=3)
 #' plot(tree,nqbin=1) # the binary question with X1 is chosen
 NULL
-
-
