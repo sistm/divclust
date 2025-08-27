@@ -40,7 +40,7 @@ cutreediv <- function(tree,K) {
     inert_init <- node_init$v$inert
     fifo_add(f, list(node = node_init, path = NULL, inert = inert_init, stage = 1))
 
-    B_diff_K <- tree_opti$height[1:(K-1)]
+    B_diff_K <- cluster$height[1:(K-1)]
     
     while ( !fifo_is_empty(f)) {
       z <- fifo_remove(f)
@@ -161,3 +161,4 @@ cutreediv <- function(tree,K) {
     return(part)}
 
 }
+
