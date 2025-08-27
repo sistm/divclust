@@ -39,6 +39,8 @@ cutreediv <- function(tree,K) {
     node_init <- cluster$tree
     inert_init <- node_init$v$inert
     fifo_add(f, list(node = node_init, path = NULL, inert = inert_init, stage = 1))
+
+    B_diff_K <- tree_opti$height[1:(K-1)]
     
     while ( !fifo_is_empty(f)) {
       z <- fifo_remove(f)
@@ -54,16 +56,27 @@ cutreediv <- function(tree,K) {
       inert_l <- node$l$v$inert
       inert_r <- node$r$v$inert
       
-      if (node$l$v$inert <= cluster$height[K]) {   
-        l[[length(l) + 1]] <-  list(class = node$v$A_l, path = path_l, inert = inertie, stage = stages) 
-      } else {
+      #if (node$l$v$inert <= cluster$height[K]) {   
+      #  l[[length(l) + 1]] <-  list(class = node$v$A_l, path = path_l, inert = inertie, stage = stages) 
+      #} else {
+      #  fifo_add(f, list(node = node$l, path = path_l, inert = append(inertie, inert_l), stage = stages + 1))
+      #}
+      #if (node$r$v$inert <= cluster$height[K]) {
+      #  l[[length(l) + 1]]  <- list(class = node$v$A_l_c, path = path_r, inert = inertie, stage = stages)
+      #} else {
+      #  fifo_add(f, list(node = node$r, path = path_r, inert = append(inertie, inert_r), stage = stages + 1))
+      #} 
+
+      if (node$l$v$inert %in% B_diff_K) {   
         fifo_add(f, list(node = node$l, path = path_l, inert = append(inertie, inert_l), stage = stages + 1))
-      }
-      if (node$r$v$inert <= cluster$height[K]) {
-        l[[length(l) + 1]]  <- list(class = node$v$A_l_c, path = path_r, inert = inertie, stage = stages)
       } else {
+        l[[length(l) + 1]] <-  list(class = node$v$A_l, path = path_l, inert = inertie, stage = stages)
+      }
+      if (node$r$v$inert %in% B_diff_K) {
         fifo_add(f, list(node = node$r, path = path_r, inert = append(inertie, inert_r), stage = stages + 1))
-      }  
+      } else {
+        l[[length(l) + 1]]  <- list(class = node$v$A_l_c, path = path_r, inert = inertie, stage = stages)
+      }
     }
     c <- rep(0, length(l)) 
     k <- 1 
@@ -146,4 +159,5 @@ cutreediv <- function(tree,K) {
     part$leaves <- l
     class(part) <- "cutreediv"
     return(part)}
+
 }
