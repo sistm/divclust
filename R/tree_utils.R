@@ -179,7 +179,7 @@ make_sentences <- function(cluster, node) {
     #symbol_in <- " \u220A "
     symbol_in <- " = "
     sentence <- paste0(cnames[index], symbol_in, "{", select_str, "}")
-    sentence_comp <- paste0(cnames_quali[index], symbol_in,"{", select_comp_str, "}")
+    sentence_comp <- paste0(cnames[index], symbol_in,"{", select_comp_str, "}")
   }
 
   else {
