@@ -81,7 +81,10 @@ make_path <- function(node,path){
     vec_type <- unlist(lapply(path,function(x){node$v$cut_val$type==x$type}))
     vec_cut_ind <- unlist(lapply(path,function(x){node$v$cut_ind==x$cut_ind}))
     if (2 %in% (vec_type+vec_cut_ind))  {
-      j <- which(vec_type+vec_cut_ind==2)
+      
+      same_idx <- which(vec_type+vec_cut_ind==2)
+      j <- same_idx[length(same_idx)]
+      
       if (node$v$cut_val$type=="quanti") {
         z <- c(path[[j]]$val[1], min(node$v$cut_val$value, path[[j]]$val[2]))
         z_comp <- c(max(node$v$cut_val$value, path[[j]]$val[1]), path[[j]]$val[2])
@@ -91,11 +94,11 @@ make_path <- function(node,path){
         z_comp <- intersect(z_comp,path[[j]]$val)
       }
     }
-    else j <- length(vec_type)+1
   }
 
-  path_l[[j]]<- list(type=node$v$cut_val$type,cut_ind=node$v$cut_ind,val = z)
-  path_r[[j]] <- list(type=node$v$cut_val$type,cut_ind=node$v$cut_ind,val = z_comp)
+  path_l[[length(path_l)+1]] <- list(type=node$v$cut_val$type, cut_ind=node$v$cut_ind, val=z)
+  path_r[[length(path_r)+1]] <- list(type=node$v$cut_val$type, cut_ind=node$v$cut_ind, val=z_comp)
+  
   return(list(left = path_l, right = path_r))
 }
 
@@ -113,8 +116,7 @@ make_path <- function(node,path){
 make_description <- function(leaves,cluster)
 {
   mod_quali <- cluster$mod_quali
-  cnames_quanti <- cluster$cnames_quanti
-  cnames_quali <- cluster$cnames_quali
+  cnames <- cluster$cnames
   description <- list()
   # suppress the two first character of a string
 
@@ -128,13 +130,13 @@ make_description <- function(leaves,cluster)
       x <-leaves[[j]]$path[[k]]
       if (x$type =="quanti") {
         A=paste0("[",round(x$val@.Data[1],digits=2)," ; ",round(x$val@.Data[2],digits=2),"[")
-        sentence <- paste0(cnames_quanti[x$cut_ind], " = ", A)
+        sentence <- paste0(cnames[x$cut_ind], " = ", A)
       }
       if (x$type =="quali") {
-        select_mod <- mod_quali[[x$cut_ind]][x$val]
+        select_mod <- mod_quali[[cnames[x$cut_ind]]][x$val]
         select_str <- Reduce(function (x,y) {paste(x,y, sep=",")}, select_mod)
         symbol_in <- " = "
-        sentence <- paste0(cnames_quali[[x$cut_ind]], symbol_in, "{", select_str, "}")
+        sentence <- paste0(cnames[x$cut_ind], symbol_in, "{", select_str, "}")
       }
       description[j] <- paste(description[[j]], sentence, sep=' , ')
     }
@@ -157,28 +159,27 @@ make_description <- function(leaves,cluster)
 make_sentences <- function(cluster, node) {
 
   mod_quali <- cluster$mod_quali
-  cnames_quanti <- cluster$cnames_quanti
-  cnames_quali <- cluster$cnames_quali
+  cnames <- cluster$cnames
   index <-  node$v$cut_ind
 
   if (node$v$cut_val$type =="quanti") {
     #value <-  node$v$cut_val$value
     #cut_val <- value * cluster$sig_quanti[index] + cluster$mu_quanti[index]
     cut_val <-  node$v$cut_val$value
-    sentence <- paste0(cnames_quanti[index], " < ", round(cut_val, digits=2))
-    sentence_comp <- paste0(cnames_quanti[index], " >= ", round(cut_val, digits=2))
+    sentence <- paste0(cnames[index], " < ", round(cut_val, digits=2))
+    sentence_comp <- paste0(cnames[index], " >= ", round(cut_val, digits=2))
   }
 
   else if (node$v$cut_val$type =="quali") {
     value <-  node$v$cut_val$value
-    select_mod <- mod_quali[[index]][value$bipart]
-    select_comp <- setdiff(mod_quali[[index]][value$bipart_c], select_mod)
+    select_mod <- mod_quali[[cnames[index]]][value$bipart]
+    select_comp <- setdiff(mod_quali[[cnames[index]]][value$bipart_c], select_mod)
     select_str <- Reduce(function (x,y) {paste(x,y, sep=",")}, select_mod)
     select_comp_str <- Reduce(function (x,y) {paste(x,y, sep=",")}, select_comp)
     #symbol_in <- " \u220A "
     symbol_in <- " = "
-    sentence <- paste0(cnames_quali[[index]], symbol_in, "{", select_str, "}")
-    sentence_comp <- paste0(cnames_quali[[index]], symbol_in,"{", select_comp_str, "}")
+    sentence <- paste0(cnames[index], symbol_in, "{", select_str, "}")
+    sentence_comp <- paste0(cnames_quali[index], symbol_in,"{", select_comp_str, "}")
   }
 
   else {
@@ -344,6 +345,31 @@ computes_height <- function (tree) {
    else {
        return(0)
    }
+}
+
+make_importance <- function(leaves,cluster)
+{
+  cnames <- cluster$cnames
+  importance <- list ()
+  
+  for (j in 1:length(leaves))
+  {
+    for (k in 1:length(leaves[[j]]$path))
+    {
+      x <- leaves[[j]]$path[[k]]
+      var <- cnames[x$cut_ind]
+      
+      if (var %in% names(importance)){
+        i <- which(names(importance) == var)
+        if (!(leaves[[j]]$inert[k] %in% importance[[i]])){
+          l <- length(importance[[i]]) + 1
+          importance[[var]][[l]] <- leaves[[j]]$inert[k]
+        }
+      }else{
+        importance[[var]][[1]] <- leaves[[j]]$inert[k]
+      }
+    }}
+  return(importance)
 }
 
 

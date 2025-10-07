@@ -31,7 +31,7 @@
 #' @export
 
 choose_question <- function (X, Z, indices, vec_quali = c(), w = rep(1. / nrow(Z), nrow(Z)),
-                             D = rep(1, ncol(Z)),vec_order) {
+                             D = rep(1, ncol(Z)),vec_order, match_var) {
   l <- length(indices)
   #if (l <= 1)
   #   stop(' choose_question : cannot divide singleton or empty sets')
@@ -105,7 +105,7 @@ choose_question <- function (X, Z, indices, vec_quali = c(), w = rep(1. / nrow(Z
         value <- to_keep[biparts[[l_max]]]
         bipart_c <- setdiff(to_keep, value)
         c_max <- list(type = "quali", value = list(bipart=value,bipart_c = bipart_c))
-        j_max <- j
+        j_max <- j + start_offsets[[1]]
         A_l_max <- indices[apply(as.matrix(X[indices, start_offsets[[j]] + c_max$value$bipart] == 1), 1, any)]
         A_l_c_max <- indices[apply(as.matrix(X[indices, start_offsets[[j]] + c_max$value$bipart] == 0), 1, all)]
       }
@@ -114,6 +114,6 @@ choose_question <- function (X, Z, indices, vec_quali = c(), w = rep(1. / nrow(Z
   }
 
   
-  return (list(inert = inert_max, A_l = A_l_max, A_l_c = A_l_c_max, cut_ind = j_max, cut_val = c_max))
+  return (list(inert = inert_max, A_l = A_l_max, A_l_c = A_l_c_max, cut_ind = match_var[j_max], cut_val = c_max))
 }
 

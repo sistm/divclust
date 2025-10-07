@@ -103,6 +103,7 @@ divclust <- function (data, K = NULL, mtry = ncol(data))
   if (is.null(data)) {
     stop("no problem to solve")
   }
+  cnames <- names(data)
   obj <- split_mix(data)
   data_quanti <- obj$data_quanti
   data_quali <- obj$data_quali
@@ -199,9 +200,16 @@ divclust <- function (data, K = NULL, mtry = ncol(data))
   }
   
   X_mtry <- cbind(X_quanti_mtry, X_quali_mtry)
+  
+  match_quanti_mtry <- match(names(data_quanti_mtry), names(data))
+  match_quali_mtry <- match(names(data_quali_mtry), names(data))
+  
+  match_mtry <- c(match_quanti_mtry, match_quali_mtry)
 
   dendro <-new.env()
-  dendro$v <- choose_question(X_mtry, Z, c(1:n), vec_quali_mtry, w, D,vec_order_mtry)
+  
+  dendro$v <- choose_question(X_mtry, Z, c(1:n), vec_quali_mtry, w, D,vec_order_mtry, match_mtry)
+  
   leaves <- list(dendro)
   k <- 1
   kmax <- nrow(unique(X))
@@ -240,8 +248,14 @@ divclust <- function (data, K = NULL, mtry = ncol(data))
     }
     
     X_mtry_l <- cbind(X_quanti_mtry_l, X_quali_mtry_l)
+    
+    match_quanti_mtry_l <- match(names(data_quanti_mtry_l), names(data))
+    match_quali_mtry_l <- match(names(data_quali_mtry_l), names(data))
+    
+    match_mtry_l <- c(match_quanti_mtry_l, match_quali_mtry_l)
 
-    cqg <- choose_question(X_mtry_l, Z, Fmin$v$A_l, vec_quali_mtry_l, w, D,vec_order_mtry_l)
+    cqg <- choose_question(X_mtry_l, Z, Fmin$v$A_l, vec_quali_mtry_l, w, D,vec_order_mtry_l, match_mtry_l)
+    
     Fmin$l <- new.env()
     Fmin$l$v <- cqg
     leaves <- append(leaves, Fmin$l)
@@ -271,8 +285,14 @@ divclust <- function (data, K = NULL, mtry = ncol(data))
     }
     
     X_mtry_r <- cbind(X_quanti_mtry_r, X_quali_mtry_r)
+    
+    match_quanti_mtry_r <- match(names(data_quanti_mtry_r), names(data))
+    match_quali_mtry_r <- match(names(data_quali_mtry_r), names(data))
+    
+    match_mtry_r <- c(match_quanti_mtry_r, match_quali_mtry_r)
 
-    cqd <- choose_question(X_mtry_r, Z, Fmin$v$A_l_c, vec_quali_mtry_r, w, D,vec_order_mtry_r)
+    cqd <- choose_question(X_mtry_r, Z, Fmin$v$A_l_c, vec_quali_mtry_r, w, D,vec_order_mtry_r, match_mtry_r)
+    
     Fmin$r <- new.env()
     Fmin$r$v<- cqd
     leaves <- append(leaves, Fmin$r)
@@ -289,6 +309,7 @@ divclust <- function (data, K = NULL, mtry = ncol(data))
   cluster$sig_quanti <- sig_quanti
   cluster$nb_quanti <- nb_quanti
   cluster$rnames <- rnames
+  cluster$cnames <- cnames
   cluster$cnames_quanti <- colnames(data_quanti)
   cluster$cnames_quali <- cnames_quali
   cluster$kmax <- kmax
@@ -305,6 +326,7 @@ divclust <- function (data, K = NULL, mtry = ncol(data))
   cluster$mtry <- mtry
   cluster$description <- make_description(ret_leaves$leaves,cluster)
   names(cluster$description) <- paste("C", 1:K, sep = "")
+  cluster$importance <- make_importance(ret_leaves$leaves,cluster)
   cluster$clusters <- lapply(ret_leaves$leaves, function(x) {rnames[x$class]})
   names(cluster$clusters) <- paste("C", 1:K, sep = "")
   cluster$inertia <- lapply(ret_leaves$leaves, function(x) {x$inert})
