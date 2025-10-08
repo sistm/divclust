@@ -31,12 +31,12 @@ list_leaves <- function(cluster) {
     #path_l <- paste(path, sentence$l, sep=', ')
     #path_r <- paste(path, sentence$r, sep=', ')
     if (is.null(node$l$l)) {
-      l[[length(l) + 1]] <-  list(class = node$v$A_l, path = path_l, inert = inertie, stage = stages)
+      l[[length(l) + 1]] <-  list(class = node$v$A_l, path = path_l, inert = inertie, stage = seq(1, stages, by = 1))
     } else {
       fifo_add(f, list(node = node$l, path = path_l, inert = append(inertie, inert_l), stage = stages + 1))
     }
     if (is.null(node$r$l)) {
-      l[[length(l) + 1]]  <- list(class = node$v$A_l_c, path = path_r, inert = inertie, stage = stages)
+      l[[length(l) + 1]]  <- list(class = node$v$A_l_c, path = path_r, inert = inertie, stage = seq(1, stages, by = 1))
     } else {
       fifo_add(f, list(node = node$r, path = path_r, inert = append(inertie, inert_r), stage = stages + 1))
     }
@@ -359,17 +359,20 @@ make_importance <- function(leaves,cluster)
     {
       x <- leaves[[j]]$path[[k]]
       var <- cnames[x$cut_ind]
+      stage_k <- leaves[[j]]$stage[k]
+      inert_k <- leaves[[j]]$inert[k]
       
       if (!is.null(var) && var %in% names(importance)){
         i <- which(names(importance) == var)
-        if (!(leaves[[j]]$inert[k] %in% importance[[i]])){
+        existing_inerts <- vapply(importance[[i]], function(x) x$inertia, numeric(1))
+        if (!(inert_k %in% existing_inerts)){
           l <- length(importance[[i]]) + 1
-          importance[[var]][[l]] <- leaves[[j]]$inert[k]
-          sum_importance[[var]] <- sum_importance[[var]] + leaves[[j]]$inert[k]
+          importance[[var]][[paste0(l)]] <- list(stage = stage_k, inertia = inert_k)
+          sum_importance[[var]] <- sum_importance[[var]] + inert_k
         }
       }else{
-        importance[[var]][[1]] <- leaves[[j]]$inert[k]
-        sum_importance[[var]] <- leaves[[j]]$inert[k]
+        importance[[var]][[paste0(1)]] <- list(stage = stage_k, inertia = inert_k) 
+        sum_importance[[var]] <- inert_k
       }
     }}
   return(list(importance = importance, sum_importance = sum_importance))
