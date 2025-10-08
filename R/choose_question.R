@@ -17,6 +17,8 @@
 #' @param w weights vector
 #' @param D diagonal distance matrix coefficients
 #' @param vec_order vector containing TRUE if the categories of the variable are ordered
+#' @param match_var vector of column indices matching the variables used in the current
+#' mtry selection to their positions in the original dataset
 #' @return \item{inert}{the between-clusters inertia of the bipartition (A_l, A_l_c)}
 #' @return \item{A_l}{the vector of indices of the cluster A_l}
 #' @return \item{A_l}{the vector of indices of the cluster A_l_c}

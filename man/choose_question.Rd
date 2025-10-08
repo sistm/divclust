@@ -11,7 +11,8 @@ choose_question(
   vec_quali = c(),
   w = rep(1/nrow(Z), nrow(Z)),
   D = rep(1, ncol(Z)),
-  vec_order
+  vec_order,
+  match_var
 )
 }
 \arguments{
@@ -31,6 +32,9 @@ categories observed in A_l)}
 \item{D}{diagonal distance matrix coefficients}
 
 \item{vec_order}{vector containing TRUE if the categories of the variable are ordered}
+
+\item{match_var}{vector of column indices matching the variables used in the current
+mtry selection to their positions in the original dataset}
 }
 \value{
 \item{inert}{the between-clusters inertia of the bipartition (A_l, A_l_c)}

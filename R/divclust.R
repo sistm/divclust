@@ -103,7 +103,7 @@ divclust <- function (data, K = NULL, mtry = ncol(data))
   if (is.null(data)) {
     stop("no problem to solve")
   }
-  cnames <- names(data)
+  cnames <- colnames(data)
   obj <- split_mix(data)
   data_quanti <- obj$data_quanti
   data_quali <- obj$data_quali
@@ -201,8 +201,8 @@ divclust <- function (data, K = NULL, mtry = ncol(data))
   
   X_mtry <- cbind(X_quanti_mtry, X_quali_mtry)
   
-  match_quanti_mtry <- match(names(data_quanti_mtry), names(data))
-  match_quali_mtry <- match(names(data_quali_mtry), names(data))
+  match_quanti_mtry <- match(names(data_quanti_mtry), cnames)
+  match_quali_mtry <- match(names(data_quali_mtry), cnames)
   
   match_mtry <- c(match_quanti_mtry, match_quali_mtry)
 
@@ -249,8 +249,8 @@ divclust <- function (data, K = NULL, mtry = ncol(data))
     
     X_mtry_l <- cbind(X_quanti_mtry_l, X_quali_mtry_l)
     
-    match_quanti_mtry_l <- match(names(data_quanti_mtry_l), names(data))
-    match_quali_mtry_l <- match(names(data_quali_mtry_l), names(data))
+    match_quanti_mtry_l <- match(names(data_quanti_mtry_l), cnames)
+    match_quali_mtry_l <- match(names(data_quali_mtry_l), cnames)
     
     match_mtry_l <- c(match_quanti_mtry_l, match_quali_mtry_l)
 
@@ -286,8 +286,8 @@ divclust <- function (data, K = NULL, mtry = ncol(data))
     
     X_mtry_r <- cbind(X_quanti_mtry_r, X_quali_mtry_r)
     
-    match_quanti_mtry_r <- match(names(data_quanti_mtry_r), names(data))
-    match_quali_mtry_r <- match(names(data_quali_mtry_r), names(data))
+    match_quanti_mtry_r <- match(names(data_quanti_mtry_r), cnames)
+    match_quali_mtry_r <- match(names(data_quali_mtry_r), cnames)
     
     match_mtry_r <- c(match_quanti_mtry_r, match_quali_mtry_r)
 

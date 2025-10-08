@@ -359,7 +359,7 @@ make_importance <- function(leaves,cluster)
       x <- leaves[[j]]$path[[k]]
       var <- cnames[x$cut_ind]
       
-      if (var %in% names(importance)){
+      if (!is.null(var) && var %in% names(importance)){
         i <- which(names(importance) == var)
         if (!(leaves[[j]]$inert[k] %in% importance[[i]])){
           l <- length(importance[[i]]) + 1
