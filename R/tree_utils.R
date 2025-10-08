@@ -351,6 +351,7 @@ make_importance <- function(leaves,cluster)
 {
   cnames <- cluster$cnames
   importance <- list ()
+  sum_importance <- list()
   
   for (j in 1:length(leaves))
   {
@@ -364,12 +365,12 @@ make_importance <- function(leaves,cluster)
         if (!(leaves[[j]]$inert[k] %in% importance[[i]])){
           l <- length(importance[[i]]) + 1
           importance[[var]][[l]] <- leaves[[j]]$inert[k]
+          sum_importance[[var]] <- sum_importance[[var]] + leaves[[j]]$inert[k]
         }
       }else{
         importance[[var]][[1]] <- leaves[[j]]$inert[k]
+        sum_importance[[var]] <- leaves[[j]]$inert[k]
       }
     }}
-  return(importance)
+  return(list(importance = importance, sum_importance = sum_importance))
 }
-
-

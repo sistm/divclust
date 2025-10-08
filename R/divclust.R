@@ -326,7 +326,8 @@ divclust <- function (data, K = NULL, mtry = ncol(data))
   cluster$mtry <- mtry
   cluster$description <- make_description(ret_leaves$leaves,cluster)
   names(cluster$description) <- paste("C", 1:K, sep = "")
-  cluster$importance <- make_importance(ret_leaves$leaves,cluster)
+  cluster$importance <- make_importance(ret_leaves$leaves,cluster)$importance
+  cluster$sum_importance <- make_importance(ret_leaves$leaves,cluster)$sum_importance
   cluster$clusters <- lapply(ret_leaves$leaves, function(x) {rnames[x$class]})
   names(cluster$clusters) <- paste("C", 1:K, sep = "")
   cluster$inertia <- lapply(ret_leaves$leaves, function(x) {x$inert})
