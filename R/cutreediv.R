@@ -38,7 +38,7 @@ cutreediv <- function(tree,K) {
     f <- fifo_create()
     node_init <- cluster$tree
     inert_init <- node_init$v$inert
-    fifo_add(f, list(node = node_init, path = NULL, inert = inert_init, stage = 1))
+    fifo_add(f, list(node = node_init, path = NULL, inert = inert_init, stage = 1, code = 1))
 
     B_diff_K <- cluster$height[1:(K-1)]
     
@@ -48,6 +48,7 @@ cutreediv <- function(tree,K) {
       path <- z$path
       inertie <- z$inert
       stages <- z$stage
+      code <- z$code
       
       sentence <- make_path(node, path)
       path_l <- sentence$l
@@ -55,6 +56,8 @@ cutreediv <- function(tree,K) {
       
       inert_l <- node$l$v$inert
       inert_r <- node$r$v$inert
+      code_l <- 2*code[length(code)] 
+      code_r <- 2*code[length(code)] +1
       
       #if (node$l$v$inert <= cluster$height[K]) {   
       #  l[[length(l) + 1]] <-  list(class = node$v$A_l, path = path_l, inert = inertie, stage = stages) 
@@ -68,14 +71,14 @@ cutreediv <- function(tree,K) {
       #} 
 
       if (node$l$v$inert %in% B_diff_K) {   
-        fifo_add(f, list(node = node$l, path = path_l, inert = append(inertie, inert_l), stage = stages + 1))
+        fifo_add(f, list(node = node$l, path = path_l, inert = append(inertie, inert_l), stage = stages + 1, code = append(code, code_l)))
       } else {
-        l[[length(l) + 1]] <-  list(class = node$v$A_l, path = path_l, inert = inertie, stage = stages)
+        l[[length(l) + 1]] <-  list(class = node$v$A_l, path = path_l, inert = inertie, stage = seq(1, stages, by = 1), code = code) 
       }
       if (node$r$v$inert %in% B_diff_K) {
-        fifo_add(f, list(node = node$r, path = path_r, inert = append(inertie, inert_r), stage = stages + 1))
+        fifo_add(f, list(node = node$r, path = path_r, inert = append(inertie, inert_r), stage = stages + 1, code = append(code, code_r)))
       } else {
-        l[[length(l) + 1]]  <- list(class = node$v$A_l_c, path = path_r, inert = inertie, stage = stages)
+        l[[length(l) + 1]]  <- list(class = node$v$A_l_c, path = path_r, inert = inertie, stage = seq(1, stages, by = 1), code = code)
       }
     }
     c <- rep(0, length(l)) 
@@ -90,6 +93,8 @@ cutreediv <- function(tree,K) {
     part <- list()
     part$description <- make_description(l,cluster)
     names(part$description) <- paste("C", 1:length(l), sep = "")
+    part$importance <- make_importance(l,cluster)$importance
+    part$sum_importance <- make_importance(l,cluster)$sum_importance
     part$clusters <- lapply(l, function(x) {cluster$rnames[x$class]})
     names(part$clusters) <- paste("C", 1:length(l), sep = "")
     part$height <- lapply(l, function(x) {x$inert})
@@ -108,7 +113,7 @@ cutreediv <- function(tree,K) {
     f <- fifo_create()
     node_init <- cluster$tree
     inert_init <- node_init$v$inert
-    fifo_add(f, list(node = node_init, path = NULL, inert = inert_init, stage = 1))
+    fifo_add(f, list(node = node_init, path = NULL, inert = inert_init, stage = 1, code = 1))
     
     while ( !fifo_is_empty(f)) {
       z <- fifo_remove(f)
@@ -116,6 +121,7 @@ cutreediv <- function(tree,K) {
       path <- z$path
       inertie <- z$inert
       stages <- z$stage
+      code <- z$code
       
       sentence <- make_path(node, path)
       path_l <- sentence$l
@@ -123,16 +129,18 @@ cutreediv <- function(tree,K) {
       
       inert_l <- node$l$v$inert
       inert_r <- node$r$v$inert
+      code_l <- 2*code[length(code)] 
+      code_r <- 2*code[length(code)] +1 
       
       if (node$l$v$inert <= 0) {   
-        l[[length(l) + 1]] <-  list(class = node$v$A_l, path = path_l, inert = inertie, stage = stages) 
+        l[[length(l) + 1]] <-  list(class = node$v$A_l, path = path_l, inert = inertie, stage = seq(1, stages, by = 1), code = code) 
       } else {
-        fifo_add(f, list(node = node$l, path = path_l, inert = append(inertie, inert_l), stage = stages + 1))
+        fifo_add(f, list(node = node$l, path = path_l, inert = append(inertie, inert_l), stage = stages + 1, code = append(code, code_l)))
       }
       if (node$r$v$inert <= 0) {
-        l[[length(l) + 1]]  <- list(class = node$v$A_l_c, path = path_r, inert = inertie, stage = stages)
+        l[[length(l) + 1]]  <- list(class = node$v$A_l_c, path = path_r, inert = inertie, stage = seq(1, stages, by = 1), code = code)
       } else {
-        fifo_add(f, list(node = node$r, path = path_r, inert = append(inertie, inert_r), stage = stages + 1))
+        fifo_add(f, list(node = node$r, path = path_r, inert = append(inertie, inert_r), stage = stages + 1, code = append(code, code_r)))
       }  
     }
     c <- rep(0, length(l)) 
@@ -147,6 +155,8 @@ cutreediv <- function(tree,K) {
     part <- list()
     part$description <- make_description(l,cluster)
     names(part$description) <- paste("C", 1:length(l), sep = "")
+    part$importance <- make_importance(l,cluster)$importance
+    part$sum_importance <- make_importance(l,cluster)$sum_importance
     part$clusters <- lapply(l, function(x) {cluster$rnames[x$class]})
     names(part$clusters) <- paste("C", 1:length(l), sep = "")
     part$height <- lapply(l, function(x) {x$inert})
