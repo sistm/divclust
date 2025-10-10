@@ -13,13 +13,14 @@ list_leaves <- function(cluster) {
   node_init <- cluster$tree
   inert_init <- node_init$v$inert
   #fifo_add(f, list(node = cluster$tree, path = ""))
-  fifo_add(f, list(node = node_init, path = NULL, inert = inert_init, stage = 1))
+  fifo_add(f, list(node = node_init, path = NULL, inert = inert_init, stage = 1, code = 1))
   while ( !fifo_is_empty(f)) {
     z <- fifo_remove(f)
     node <- z$node
     path <- z$path
     inertie <- z$inert
     stages <- z$stage
+    code <- z$code
 
     sentence <- make_path(node, path)
     path_l <- sentence$l
@@ -27,18 +28,20 @@ list_leaves <- function(cluster) {
     
     inert_l <- node$l$v$inert
     inert_r <- node$r$v$inert
+    code_l <- 2*code[length(code)] 
+    code_r <- 2*code[length(code)] +1
     #sentence <- make_sentences(cluster, node)
     #path_l <- paste(path, sentence$l, sep=', ')
     #path_r <- paste(path, sentence$r, sep=', ')
     if (is.null(node$l$l)) {
-      l[[length(l) + 1]] <-  list(class = node$v$A_l, path = path_l, inert = inertie, stage = seq(1, stages, by = 1))
+      l[[length(l) + 1]] <-  list(class = node$v$A_l, path = path_l, inert = inertie, stage = seq(1, stages, by = 1), code = code)
     } else {
-      fifo_add(f, list(node = node$l, path = path_l, inert = append(inertie, inert_l), stage = stages + 1))
+      fifo_add(f, list(node = node$l, path = path_l, inert = append(inertie, inert_l), stage = stages + 1, code = append(code, code_l)))
     }
     if (is.null(node$r$l)) {
-      l[[length(l) + 1]]  <- list(class = node$v$A_l_c, path = path_r, inert = inertie, stage = seq(1, stages, by = 1))
+      l[[length(l) + 1]]  <- list(class = node$v$A_l_c, path = path_r, inert = inertie, stage = seq(1, stages, by = 1), code = code)
     } else {
-      fifo_add(f, list(node = node$r, path = path_r, inert = append(inertie, inert_r), stage = stages + 1))
+      fifo_add(f, list(node = node$r, path = path_r, inert = append(inertie, inert_r), stage = stages + 1, code = append(code, code_r)))
     }
   }
   c <- rep(0, length(l))
@@ -361,17 +364,18 @@ make_importance <- function(leaves,cluster)
       var <- cnames[x$cut_ind]
       stage_k <- leaves[[j]]$stage[k]
       inert_k <- leaves[[j]]$inert[k]
+      code_k <- leaves[[j]]$code[k]
       
       if (!is.null(var) && var %in% names(importance)){
         i <- which(names(importance) == var)
         existing_inerts <- vapply(importance[[i]], function(x) x$inertia, numeric(1))
         if (!(inert_k %in% existing_inerts)){
-          l <- length(importance[[i]]) + 1
-          importance[[var]][[paste0(l)]] <- list(stage = stage_k, inertia = inert_k)
+          #l <- length(importance[[i]]) + 1
+          importance[[var]][[paste0(code_k)]] <- list(stage = stage_k, inertia = inert_k)
           sum_importance[[var]] <- sum_importance[[var]] + inert_k
         }
       }else{
-        importance[[var]][[paste0(1)]] <- list(stage = stage_k, inertia = inert_k) 
+        importance[[var]][[paste0(code_k)]] <- list(stage = stage_k, inertia = inert_k) 
         sum_importance[[var]] <- inert_k
       }
     }}
