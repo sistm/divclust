@@ -12,8 +12,9 @@ list_leaves <- function(cluster) {
   f <- fifo_create()
   node_init <- cluster$tree
   inert_init <- node_init$v$inert
+  sample_size <- length(node_init$v$A_l) + length(node_init$v$A_l_c)
   #fifo_add(f, list(node = cluster$tree, path = ""))
-  fifo_add(f, list(node = node_init, path = NULL, inert = inert_init, stage = 1, code = 1))
+  fifo_add(f, list(node = node_init, path = NULL, inert = inert_init, stage = 1, code = 1, proportion = 1))
   while ( !fifo_is_empty(f)) {
     z <- fifo_remove(f)
     node <- z$node
@@ -21,6 +22,7 @@ list_leaves <- function(cluster) {
     inertie <- z$inert
     stages <- z$stage
     code <- z$code
+    proportion <- z$proportion
 
     sentence <- make_path(node, path)
     path_l <- sentence$l
@@ -30,18 +32,20 @@ list_leaves <- function(cluster) {
     inert_r <- node$r$v$inert
     code_l <- 2*code[length(code)] 
     code_r <- 2*code[length(code)] +1
+    proportion_l <- length(node$v$A_l)/sample_size
+    proportion_r <- length(node$v$A_l_c)/sample_size
     #sentence <- make_sentences(cluster, node)
     #path_l <- paste(path, sentence$l, sep=', ')
     #path_r <- paste(path, sentence$r, sep=', ')
     if (is.null(node$l$l)) {
-      l[[length(l) + 1]] <-  list(class = node$v$A_l, path = path_l, inert = inertie, stage = seq(1, stages, by = 1), code = code)
+      l[[length(l) + 1]] <-  list(class = node$v$A_l, path = path_l, inert = inertie, stage = seq(1, stages, by = 1), code = code, proportion = proportion)
     } else {
-      fifo_add(f, list(node = node$l, path = path_l, inert = append(inertie, inert_l), stage = stages + 1, code = append(code, code_l)))
+      fifo_add(f, list(node = node$l, path = path_l, inert = append(inertie, inert_l), stage = stages + 1, code = append(code, code_l), proportion = append(proportion, proportion_l)))
     }
     if (is.null(node$r$l)) {
-      l[[length(l) + 1]]  <- list(class = node$v$A_l_c, path = path_r, inert = inertie, stage = seq(1, stages, by = 1), code = code)
+      l[[length(l) + 1]]  <- list(class = node$v$A_l_c, path = path_r, inert = inertie, stage = seq(1, stages, by = 1), code = code, proportion = proportion)
     } else {
-      fifo_add(f, list(node = node$r, path = path_r, inert = append(inertie, inert_r), stage = stages + 1, code = append(code, code_r)))
+      fifo_add(f, list(node = node$r, path = path_r, inert = append(inertie, inert_r), stage = stages + 1, code = append(code, code_r), proportion = append(proportion, proportion_r)))
     }
   }
   c <- rep(0, length(l))
@@ -350,11 +354,11 @@ computes_height <- function (tree) {
    }
 }
 
-make_importance <- function(leaves,cluster)
+make_MDI_importance <- function(leaves,cluster)
 {
   cnames <- cluster$cnames
-  importance <- list ()
-  sum_importance <- list()
+  MDI_importance <- list ()
+  sum_MDI_importance <- list()
   
   for (j in 1:length(leaves))
   {
@@ -365,19 +369,20 @@ make_importance <- function(leaves,cluster)
       stage_k <- leaves[[j]]$stage[k]
       inert_k <- leaves[[j]]$inert[k]
       code_k <- leaves[[j]]$code[k]
+      proportion_k <- leaves[[j]]$proportion[k]
       
-      if (!is.null(var) && var %in% names(importance)){
-        i <- which(names(importance) == var)
-        existing_inerts <- vapply(importance[[i]], function(x) x$inertia, numeric(1))
+      if (!is.null(var) && var %in% names(MDI_importance)){
+        i <- which(names(MDI_importance) == var)
+        existing_inerts <- vapply(MDI_importance[[i]], function(x) x$inertia, numeric(1))
         if (!(inert_k %in% existing_inerts)){
-          #l <- length(importance[[i]]) + 1
-          importance[[var]][[paste0(code_k)]] <- list(stage = stage_k, inertia = inert_k)
-          sum_importance[[var]] <- sum_importance[[var]] + inert_k
+          #l <- length(MDI_importance[[i]]) + 1
+          MDI_importance[[var]][[paste0(code_k)]] <- list(stage = stage_k, inertia = inert_k, proportion = proportion_k)
+          sum_MDI_importance[[var]] <- sum_MDI_importance[[var]] + inert_k*proportion_k
         }
       }else{
-        importance[[var]][[paste0(code_k)]] <- list(stage = stage_k, inertia = inert_k) 
-        sum_importance[[var]] <- inert_k
+        MDI_importance[[var]][[paste0(code_k)]] <- list(stage = stage_k, inertia = inert_k, proportion = proportion_k) 
+        sum_MDI_importance[[var]] <- inert_k*proportion_k
       }
     }}
-  return(list(importance = importance, sum_importance = sum_importance))
+  return(list(MDI_importance = MDI_importance, sum_MDI_importance = sum_MDI_importance))
 }
