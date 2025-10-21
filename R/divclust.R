@@ -13,6 +13,7 @@
 #' @param K the number of final clusters (leaves of the tree). By default, the complete dendrogram
 #' is performed.
 #' @param mtry the number of variables sampled at each tree node. By default, all the variables are selected.
+#' @param weighting Logical (TRUE or FALSE). If TRUE, node inertia is weighted in the calculation of variable importance. 
 
 #' @return \item{tree}{an internal \strong{tree}}
 #' @return \item{clusters}{the list of observations in each final cluster (the leaves of the tree)}
@@ -97,7 +98,7 @@
 #' c_tot$tree$v #internal contain of the root node
 #' c_tot$tree$r$v #internal contain of the right node of the root node
 
-divclust <- function (data, K = NULL, mtry = ncol(data))
+divclust <- function (data, K = NULL, mtry = ncol(data), weighting = FALSE)
 {
   cl <- match.call()
   if (is.null(data)) {
@@ -326,8 +327,9 @@ divclust <- function (data, K = NULL, mtry = ncol(data))
   cluster$mtry <- mtry
   cluster$description <- make_description(ret_leaves$leaves,cluster)
   names(cluster$description) <- paste("C", 1:K, sep = "")
-  cluster$MDI_importance <- make_MDI_importance(ret_leaves$leaves,cluster)$MDI_importance
-  cluster$sum_MDI_importance <- make_MDI_importance(ret_leaves$leaves,cluster)$sum_MDI_importance
+  calc_MDI_importance <- make_MDI_importance(ret_leaves$leaves,cluster, weighting)
+  cluster$MDI_importance <- calc_MDI_importance$MDI_importance
+  cluster$sum_MDI_importance <- calc_MDI_importance$sum_MDI_importance
   cluster$clusters <- lapply(ret_leaves$leaves, function(x) {rnames[x$class]})
   names(cluster$clusters) <- paste("C", 1:K, sep = "")
   cluster$inertia <- lapply(ret_leaves$leaves, function(x) {x$inert})

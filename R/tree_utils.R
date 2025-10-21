@@ -354,7 +354,7 @@ computes_height <- function (tree) {
    }
 }
 
-make_MDI_importance <- function(leaves,cluster)
+make_MDI_importance <- function(leaves,cluster, weighting = FALSE)
 {
   cnames <- cluster$cnames
   MDI_importance <- list ()
@@ -370,6 +370,7 @@ make_MDI_importance <- function(leaves,cluster)
       inert_k <- leaves[[j]]$inert[k]
       code_k <- leaves[[j]]$code[k]
       proportion_k <- leaves[[j]]$proportion[k]
+      weighted_k <- if (isTRUE(weighting)) proportion_k else 1
       
       if (!is.null(var) && var %in% names(MDI_importance)){
         i <- which(names(MDI_importance) == var)
@@ -377,11 +378,11 @@ make_MDI_importance <- function(leaves,cluster)
         if (!(inert_k %in% existing_inerts)){
           #l <- length(MDI_importance[[i]]) + 1
           MDI_importance[[var]][[paste0(code_k)]] <- list(stage = stage_k, inertia = inert_k, proportion = proportion_k)
-          sum_MDI_importance[[var]] <- sum_MDI_importance[[var]] + inert_k*proportion_k
+          sum_MDI_importance[[var]] <- sum_MDI_importance[[var]] + inert_k*weighted_k
         }
       }else{
         MDI_importance[[var]][[paste0(code_k)]] <- list(stage = stage_k, inertia = inert_k, proportion = proportion_k) 
-        sum_MDI_importance[[var]] <- inert_k*proportion_k
+        sum_MDI_importance[[var]] <- inert_k*weighted_k
       }
     }}
   return(list(MDI_importance = MDI_importance, sum_MDI_importance = sum_MDI_importance))

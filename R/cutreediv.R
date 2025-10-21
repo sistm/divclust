@@ -3,6 +3,7 @@
 #' This function cuts the tree into several cluters by specifying the desired number of clusters. 
 #' @param tree the divclust object
 #' @param K an integer with the desired number of clusters.
+#' @param weighting Logical (TRUE or FALSE). If TRUE, node inertia is weighted in the calculation of variable importance.
 #' @return \item{clusters}{the list of observations in each  cluster}
 #' @return \item{description}{the monothetic description of each cluster}
 #' @return \item{which_cluster}{a vector of integers indicating the cluster of each observation}
@@ -26,7 +27,7 @@
 #' p_4 <- cutreediv(tree, 4) # 
 #' 
 
-cutreediv <- function(tree,K) {
+cutreediv <- function(tree,K, weighting = FALSE) {
   cl <- match.call()
   cluster <- tree
   tree_kmax <- cluster$kmax
@@ -97,8 +98,9 @@ cutreediv <- function(tree,K) {
     part <- list()
     part$description <- make_description(l,cluster)
     names(part$description) <- paste("C", 1:length(l), sep = "")
-    part$MDI_importance <- make_MDI_importance(l,cluster)$MDI_importance
-    part$sum_MDI_importance <- make_MDI_importance(l,cluster)$sum_MDI_importance
+    calc_MDI_importance <- make_MDI_importance(l,cluster, weighting)
+    part$MDI_importance <- calc_MDI_importance$MDI_importance
+    part$sum_MDI_importance <- calc_MDI_importance$sum_MDI_importance
     part$clusters <- lapply(l, function(x) {cluster$rnames[x$class]})
     names(part$clusters) <- paste("C", 1:length(l), sep = "")
     part$height <- lapply(l, function(x) {x$inert})
@@ -163,8 +165,9 @@ cutreediv <- function(tree,K) {
     part <- list()
     part$description <- make_description(l,cluster)
     names(part$description) <- paste("C", 1:length(l), sep = "")
-    part$MDI_importance <- make_MDI_importance(l,cluster)$MDI_importance
-    part$sum_MDI_importance <- make_MDI_importance(l,cluster)$sum_MDI_importance
+    calc_MDI_importance <- make_MDI_importance(l,cluster, weighting)
+    part$MDI_importance <- calc_MDI_importance$MDI_importance
+    part$sum_MDI_importance <- calc_MDI_importance$sum_MDI_importance
     part$clusters <- lapply(l, function(x) {cluster$rnames[x$class]})
     names(part$clusters) <- paste("C", 1:length(l), sep = "")
     part$height <- lapply(l, function(x) {x$inert})
