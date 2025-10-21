@@ -4,12 +4,14 @@
 \alias{cutreediv}
 \title{Cut the tree}
 \usage{
-cutreediv(tree, K)
+cutreediv(tree, K, weighting = FALSE)
 }
 \arguments{
 \item{tree}{the divclust object}
 
 \item{K}{an integer with the desired number of clusters.}
+
+\item{weighting}{Logical (TRUE or FALSE). If TRUE, node inertia is weighted in the calculation of variable importance.}
 }
 \value{
 \item{clusters}{the list of observations in each  cluster}

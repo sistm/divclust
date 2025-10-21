@@ -4,7 +4,7 @@
 \alias{divclust}
 \title{Monothetic divisive hierarchical clustering}
 \usage{
-divclust(data, K = NULL, mtry = ncol(data))
+divclust(data, K = NULL, mtry = ncol(data), weighting = FALSE)
 }
 \arguments{
 \item{data}{a data frame with numerical and/or categorical variables.
@@ -14,6 +14,8 @@ If the variable is ordinal, the column must be of class factor with the argument
 is performed.}
 
 \item{mtry}{the number of variables sampled at each tree node. By default, all the variables are selected.}
+
+\item{weighting}{Logical (TRUE or FALSE). If TRUE, node inertia is weighted in the calculation of variable importance.}
 }
 \value{
 \item{tree}{an internal \strong{tree}}
