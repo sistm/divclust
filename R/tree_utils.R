@@ -354,6 +354,14 @@ computes_height <- function (tree) {
    }
 }
 
+
+
+#' @title Computes Mean Decrease of Impurity (MDI Index)
+#' @description Function which computes the MDI Index.
+#' @param leaves a list of leaves
+#' @param cluster the divclust object 
+#' @param weighting  
+#' @return MDI Importance
 make_MDI_importance <- function(leaves,cluster, weighting = FALSE)
 {
   cnames <- cluster$cnames
