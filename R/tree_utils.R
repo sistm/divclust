@@ -360,7 +360,7 @@ computes_height <- function (tree) {
 #' @description Function which computes the MDI Index.
 #' @param leaves a list of leaves
 #' @param cluster the divclust object 
-#' @param weighting  
+#' @param weighting Logical (TRUE or FALSE). If TRUE, node inertia is weighted in the calculation of variable importance. 
 #' @return MDI Importance
 make_MDI_importance <- function(leaves,cluster, weighting = FALSE)
 {
