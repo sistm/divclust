@@ -103,8 +103,8 @@ cutreediv <- function(tree,K, weighting = FALSE) {
     part$sum_MDI_importance <- calc_MDI_importance$sum_MDI_importance
     part$clusters <- lapply(l, function(x) {cluster$rnames[x$class]})
     names(part$clusters) <- paste("C", 1:length(l), sep = "")
-    part$height <- lapply(l, function(x) {x$inert})
-    names(part$height) <- paste("C", 1:length(l), sep = "")
+    part$inertia <- lapply(l, function(x) {x$inert})
+    names(part$inertia) <- paste("C", 1:length(l), sep = "")
     part$stages <- lapply(l, function(x) {x$stage})
     names(part$stages) <- paste("C", 1:length(l), sep = "")
     #names(part$height) <- lapply(l, function(x) {cluster$rnames[x$class]})
