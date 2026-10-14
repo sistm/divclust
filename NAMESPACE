@@ -21,11 +21,15 @@ export(make_sentences)
 export(split_mix)
 import(RcppEigen)
 importFrom(Rcpp,evalCpp)
-importFrom(graphics,par)
-importFrom(graphics,plot.new)
-importFrom(graphics,segments)
-importFrom(graphics,text)
-importFrom(intervals,Intervals)
-importFrom(intervals,interval_intersection)
+importFrom(graphics,
+  par,
+  plot.new,
+  segments,
+  text
+)
+importFrom(intervals,
+  Intervals,
+  interval_intersection
+)
 importFrom(stats,sd)
 useDynLib(divclust, .registration = TRUE)
