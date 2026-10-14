@@ -220,6 +220,13 @@ divclust <- function (data, K = NULL, mtry = ncol(data), weighting = FALSE)
 
   while (k < K) {
     ind_max <- which.max(lapply(leaves, function(x){x$v$inert}))
+    
+    if (!is.list(leaves[[ind_max]]$v$cut_val)){
+      K <- k
+      height <- height[seq_len(k-1)]
+      break
+    }
+    
     height[k] <- leaves[[ind_max]]$v$inert
     Fmin <- leaves[[ind_max]]
     leaves[[ind_max]] <- NULL
@@ -299,16 +306,6 @@ divclust <- function (data, K = NULL, mtry = ncol(data), weighting = FALSE)
     leaves <- append(leaves, Fmin$r)
 
     k <- k+1
-    
-    if (!is.list(leaves[[ind_max]]$v$cut_val)){
-      K <- k 
-      height <- height[seq_len(k-1)]
-      break
-    }
-    height[k] <- leaves[[ind_max]]$v$inert
-    Fmin <- leaves[[ind_max]]
-    leaves[[ind_max]] <- NULL
-    
   }
 
   cluster <-list(tree=dendro)
